@@ -110,15 +110,32 @@ while Game:
             ball.speed_boost(0.5)
             speed_x *= -1
         else:
-            Finish = True
-            window.blit(lose1, (700, 200))
+            if ball.rect.y > L_rocket.rect.y + L_rocket.player_size_y/2:
+                if speed_y < 0:
+                    speed_y *= -1
+                else:
+                    ball.rect.y = L_rocket.rect.y + L_rocket.player_size_y
+            else:
+                if speed_y >= 0:
+                    speed_y *= -1
+                else:
+                    ball.rect.y = L_rocket.rect.y - ball.player_size_y
+
     if sprite.collide_rect(ball, R_rocket):
         if ball.rect.y + ball.player_size_y > R_rocket.rect.y and ball.rect.y < R_rocket.rect.y + R_rocket.player_size_y and R_rocket.rect.x >= ball.rect.x + ball.player_size_x - speed_x:
             ball.speed_boost(0.5)
             speed_x *= -1
         else:
-            Finish = True
-            window.blit(lose2, (700, 200))
+            if ball.rect.y > R_rocket.rect.y + R_rocket.player_size_y / 2:
+                if speed_y < 0:
+                    speed_y *= -1
+                else:
+                    ball.rect.y = R_rocket.rect.y + R_rocket.player_size_y
+            else:
+                if speed_y >= 0:
+                    speed_y *= -1
+                else:
+                    ball.rect.y = R_rocket.rect.y - ball.player_size_y
 
 
 
