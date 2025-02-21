@@ -26,15 +26,15 @@ class GameSprite(sprite.Sprite):
 class Player(GameSprite):
     def update_left(self):
         keys = key.get_pressed()
-        if keys[K_s] and self.rect.y <= 1080 - self.player_size_y - self.speed and K_block == False:
+        if keys[K_s] and self.rect.y <= 1080 - self.player_size_y - self.speed:
             self.rect.y += self.speed
-        if keys[K_w] and self.rect.y >= self.speed and K_block == False:
+        if keys[K_w] and self.rect.y >= self.speed:
             self.rect.y -= self.speed
     def update_right(self):
         keys = key.get_pressed()
-        if keys[K_DOWN] and self.rect.y <= 1080 - self.player_size_y - self.speed and K_block == False:
+        if keys[K_DOWN] and self.rect.y <= 1080 - self.player_size_y - self.speed:
             self.rect.y += self.speed
-        if keys[K_UP] and self.rect.y >= self.speed and K_block == False:
+        if keys[K_UP] and self.rect.y >= self.speed:
             self.rect.y -= self.speed
 
 class Ball(GameSprite):
@@ -65,23 +65,32 @@ R_rocket = Player('sprites/rocketka.png', 1680, 340, 10, 240,400)
 
 ball = Ball('sprites/ball.png', 860, 440, 20, 200,200)
 
+
+L_Lifes = 3
+R_Lifes = 3
+
 font.init()
 font1 = font.Font(None, 100)
-lose1 = font1.render('Player 1 lose!', True, (180,0,0))
-lose2 = font1.render('Player 2 lose!', True, (180,0,0))
+font2 = font.Font(None, 50)
+Win1 = font1.render('Player 1 Win!', True, (0,180,0))
+Win2 = font1.render('Player 2 Win!', True, (0,180,0))
 
 Game = True
 Finish = False
-K_block = False
 clock = time.Clock()
 FPS = 60
+speed_x = 0
+speed_y = 0
 
-speed_x = randint(-5, 5)
-if speed_x >= 0:
-    speed_y = 5 - speed_x
-else:
-    speed_y = 5 + speed_x
+def start():
+    global speed_x, speed_y
+    speed_x = randint(-5, 5)
+    if speed_x >= 0:
+        speed_y = 5 - speed_x
+    else:
+        speed_y = 5 + speed_x
 
+start()
 
 
 while Game:
@@ -99,12 +108,38 @@ while Game:
 
         ball.update()
         ball.reset()
+
+        L_Counter = font1.render('Lifes: ' + str(L_Lifes), True, (255, 255, 255))
+        R_Counter = font1.render('Lifes: ' + str(R_Lifes), True, (255, 255, 255))
+        window.blit(L_Counter, (100,100))
+        window.blit(R_Counter, (1570, 100))
     if ball.rect.x >= 1920:
-        Finish = True
-        window.blit(lose2, (700, 200))
+        if R_Lifes > 0:
+            R_Lifes -= 1
+            ball.rect.x = 860
+            ball.rect.y = 440
+            L_rocket.rect.x = 0
+            L_rocket.rect.y = 340
+            R_rocket.rect.x = 1680
+            R_rocket.rect.y = 340
+            start()
+        else:
+            Finish = True
+            window.blit(Win1, (700, 200))
     if ball.rect.x <= 0 - ball.player_size_x:
-        Finish = True
-        window.blit(lose1, (700, 200))
+        if L_Lifes >= 0:
+            L_Lifes -= 1
+            ball.rect.x = 860
+            ball.rect.y = 440
+            L_rocket.rect.x = 0
+            L_rocket.rect.y = 340
+            R_rocket.rect.x = 1680
+            R_rocket.rect.y = 340
+            start()
+            print(L_Lifes)
+        else:
+            Finish = True
+            window.blit(Win2, (700, 200))
     if sprite.collide_rect(ball, L_rocket):
         if ball.rect.y + ball.player_size_y > L_rocket.rect.y and ball.rect.y < L_rocket.rect.y + L_rocket.player_size_y and L_rocket.rect.x + L_rocket.player_size_x <= ball.rect.x - speed_x:
             ball.speed_boost(0.5)
