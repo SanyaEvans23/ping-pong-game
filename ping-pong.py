@@ -26,15 +26,15 @@ class GameSprite(sprite.Sprite):
 class Player(GameSprite):
     def update_left(self):
         keys = key.get_pressed()
-        if keys[K_s] and self.rect.y <= 1080 - self.player_size_y - self.speed:
+        if keys[K_s] and self.rect.y <= 1080 - self.player_size_y - self.speed and K_block == False:
             self.rect.y += self.speed
-        if keys[K_w] and self.rect.y >= self.speed:
+        if keys[K_w] and self.rect.y >= self.speed and K_block == False:
             self.rect.y -= self.speed
     def update_right(self):
         keys = key.get_pressed()
-        if keys[K_DOWN] and self.rect.y <= 1080 - self.player_size_y - self.speed:
+        if keys[K_DOWN] and self.rect.y <= 1080 - self.player_size_y - self.speed and K_block == False:
             self.rect.y += self.speed
-        if keys[K_UP] and self.rect.y >= self.speed:
+        if keys[K_UP] and self.rect.y >= self.speed and K_block == False:
             self.rect.y -= self.speed
 
 class Ball(GameSprite):
@@ -44,8 +44,19 @@ class Ball(GameSprite):
         self.rect.y += speed_y
         if self.rect.y >= 1080 - self.player_size_y or self.rect.y <= 0:
             speed_y *= -1
-        if self.rect.x >= 1920 - self.player_size_x or self.rect.x <= 0:
-            speed_x *= -1
+            self.speed_boost(0.5)
+    def speed_boost(self, speed_up):
+        global speed_x, speed_y
+        if speed_x >= 0:
+            speed_x += speed_up
+        else:
+            speed_x -= speed_up
+        if speed_y >= 0:
+            speed_y += speed_up
+        else:
+            speed_y -= speed_up
+
+
 
 
 
@@ -54,9 +65,14 @@ R_rocket = Player('sprites/rocketka.png', 1680, 340, 10, 240,400)
 
 ball = Ball('sprites/ball.png', 860, 440, 20, 200,200)
 
+font.init()
+font1 = font.Font(None, 100)
+lose1 = font1.render('Player 1 lose!', True, (180,0,0))
+lose2 = font1.render('Player 2 lose!', True, (180,0,0))
 
 Game = True
 Finish = False
+K_block = False
 clock = time.Clock()
 FPS = 60
 
@@ -83,6 +99,27 @@ while Game:
 
         ball.update()
         ball.reset()
+    if ball.rect.x >= 1920:
+        Finish = True
+        window.blit(lose2, (700, 200))
+    if ball.rect.x <= 0 - ball.player_size_x:
+        Finish = True
+        window.blit(lose1, (700, 200))
+    if sprite.collide_rect(ball, L_rocket):
+        if ball.rect.y + ball.player_size_y > L_rocket.rect.y and ball.rect.y < L_rocket.rect.y + L_rocket.player_size_y and L_rocket.rect.x + L_rocket.player_size_x <= ball.rect.x - speed_x:
+            ball.speed_boost(0.5)
+            speed_x *= -1
+        else:
+            Finish = True
+            window.blit(lose1, (700, 200))
+    if sprite.collide_rect(ball, R_rocket):
+        if ball.rect.y + ball.player_size_y > R_rocket.rect.y and ball.rect.y < R_rocket.rect.y + R_rocket.player_size_y and R_rocket.rect.x >= ball.rect.x + ball.player_size_x - speed_x:
+            ball.speed_boost(0.5)
+            speed_x *= -1
+        else:
+            Finish = True
+            window.blit(lose2, (700, 200))
+
 
 
 
