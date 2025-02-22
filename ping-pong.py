@@ -72,8 +72,8 @@ R_Lifes = 3
 font.init()
 font1 = font.Font(None, 100)
 font2 = font.Font(None, 50)
-Win1 = font1.render('Player 1 Win!', True, (0,180,0))
-Win2 = font1.render('Player 2 Win!', True, (0,180,0))
+Win1 = font1.render('Player 1 Win!', True, (0,240,0))
+Win2 = font1.render('Player 2 Win!', True, (0,240,0))
 
 Game = True
 Finish = False
@@ -109,12 +109,8 @@ while Game:
         ball.update()
         ball.reset()
 
-        L_Counter = font1.render('Lifes: ' + str(L_Lifes), True, (255, 255, 255))
-        R_Counter = font1.render('Lifes: ' + str(R_Lifes), True, (255, 255, 255))
-        window.blit(L_Counter, (100,100))
-        window.blit(R_Counter, (1570, 100))
     if ball.rect.x >= 1920:
-        if R_Lifes > 0:
+        if R_Lifes > 1:
             R_Lifes -= 1
             ball.rect.x = 860
             ball.rect.y = 440
@@ -127,7 +123,7 @@ while Game:
             Finish = True
             window.blit(Win1, (700, 200))
     if ball.rect.x <= 0 - ball.player_size_x:
-        if L_Lifes >= 0:
+        if L_Lifes > 1:
             L_Lifes -= 1
             ball.rect.x = 860
             ball.rect.y = 440
@@ -136,7 +132,6 @@ while Game:
             R_rocket.rect.x = 1680
             R_rocket.rect.y = 340
             start()
-            print(L_Lifes)
         else:
             Finish = True
             window.blit(Win2, (700, 200))
@@ -171,7 +166,10 @@ while Game:
                     speed_y *= -1
                 else:
                     ball.rect.y = R_rocket.rect.y - ball.player_size_y
-
+    L_Counter = font1.render('P1 Lifes: ' + str(L_Lifes), True, (255, 255, 255))
+    R_Counter = font1.render('P2 Lifes: ' + str(R_Lifes), True, (255, 255, 255))
+    window.blit(L_Counter, (100, 100))
+    window.blit(R_Counter, (1470, 100))
 
 
 
